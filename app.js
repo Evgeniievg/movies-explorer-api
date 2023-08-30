@@ -11,7 +11,7 @@ const router = require('./routes/index');
 const { mongoUrl } = require('./utils/config');
 const limiter = require('./middlewares/limiter');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 5000 } = process.env;
 const app = express();
 
 app.use(helmet());
