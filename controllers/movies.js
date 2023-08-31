@@ -44,7 +44,7 @@ module.exports.createMovie = (req, res, next) => {
     });
 };
 
-module.exports.getCardData = (req, res, next) => {
+module.exports.getMovieData = (req, res, next) => {
   const ownerId = req.user._id;
   Movie.find({ owner: ownerId })
     .then((movies) => res.send({ data: movies }))
