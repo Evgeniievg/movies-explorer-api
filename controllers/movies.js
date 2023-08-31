@@ -34,7 +34,7 @@ module.exports.createMovie = (req, res, next) => {
       owner: req.user._id,
     },
   )
-    .then((card) => res.status(201).send({ data: card }))
+    .then((movie) => res.status(201).send({ data: movie }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest(BAD_MOVIE_VALIDATION));
