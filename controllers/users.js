@@ -5,6 +5,14 @@ const BadRequest = require('../utils/bad-request-error');
 const AuthorizationError = require('../utils/authorization-error');
 const ConflictError = require('../utils/conflict-error');
 const { jwtSecret } = require('../utils/config');
+const {
+  BAD_AUTHORIZATION,
+  BAD_USER_VALIDATION,
+  USER_CONFLICT,
+  USER_NOT_FOUND,
+  BAD_REQUEST,
+  DELETED_COOKIES,
+} = require('../utils/messages');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -24,11 +32,11 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequest('Ошибка валидации пользователя'));
+        next(new BadRequest(BAD_USER_VALIDATION));
         return;
       }
       if (err.code === 11000) {
-        next(new ConflictError('Пользователь с данным email уже существует'));
+        next(new ConflictError(USER_CONFLICT));
         return;
       }
       next(err);
@@ -40,14 +48,14 @@ module.exports.getUserData = (req, res, next) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Пользователь не найден'));
+        next(new NotFoundError(USER_NOT_FOUND));
         return;
       }
       res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequest('Ошибка при поиске пользователя'));
+        next(new BadRequest(BAD_REQUEST));
         return;
       }
       next(err);
@@ -59,14 +67,14 @@ module.exports.updateUser = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { email, name }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Пользователь не найден'));
+        next(new NotFoundError(USER_NOT_FOUND));
         return;
       }
       res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequest('Ошибка при поиске пользователя'));
+        next(new BadRequest(BAD_USER_VALIDATION));
         return;
       }
       next(err);
@@ -88,10 +96,10 @@ module.exports.login = (req, res, next) => {
       return res.send({ token });
     })
     .catch(() => {
-      next(new AuthorizationError('Ошибка при авторизации'));
+      next(new AuthorizationError(BAD_AUTHORIZATION));
     });
 };
 
 module.exports.signout = (req, res) => {
-  res.status(202).clearCookie('jwt').send('Куки удалены');
+  res.status(202).clearCookie('jwt').send(DELETED_COOKIES);
 };
