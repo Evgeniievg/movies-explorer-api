@@ -77,13 +77,17 @@ module.exports.updateUser = (req, res, next) => {
         next(new BadRequest(BAD_USER_VALIDATION));
         return;
       }
+      if (err.code === 11000) {
+        next(new ConflictError(USER_CONFLICT));
+        return;
+      }
       next(err);
     });
 };
 
 module.exports.login = (req, res, next) => {
-  const { email, password, name } = req.body;
-  return User.findUserByCredentials(email, password, name)
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
@@ -101,5 +105,5 @@ module.exports.login = (req, res, next) => {
 };
 
 module.exports.signout = (req, res) => {
-  res.status(202).clearCookie('jwt').send(DELETED_COOKIES);
+  res.status(200).clearCookie('jwt').send(DELETED_COOKIES);
 };

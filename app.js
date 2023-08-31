@@ -15,13 +15,6 @@ const limiter = require('./middlewares/limiter');
 const { PORT = 5000 } = process.env;
 const app = express();
 
-app.use(helmet());
-app.use(cookies());
-app.use(limiter);
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(requestLogger);
-
 mongoose.connect(mongoUrl, { useNewUrlParser: true })
   .then(() => {
     console.log('Успешно установлена связь с MongoDB');
@@ -29,6 +22,14 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true })
   .catch((error) => {
     console.log(`Произошла ошибка при установлении связи с MongoDB: ${error}`);
   });
+
+app.use(helmet());
+app.use(cookies());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(requestLogger);
+app.use(limiter);
 
 app.use(router);
 

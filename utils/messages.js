@@ -12,6 +12,7 @@ const Message = {
   BAD_REQUEST: 'Данные некорректны',
   BAD_AUTHORIZATION: 'Нет доступа',
   DELETED_COOKIES: 'Куки удалены',
+  BAD_URL: 'Ссылка некорректна',
 };
 
 module.exports = Message;
