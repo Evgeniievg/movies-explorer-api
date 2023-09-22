@@ -1,36 +1,21 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookies = require('cookie-parser');
 const { errors } = require('celebrate');
 const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
 
-const { login, createUser, signout } = require('./controllers/users');
-const { signinValidation, signupValidation } = require('./middlewares/validation');
-const { auth } = require('./middlewares/auth');
 const errorHandler = require('./middlewares/error-handler');
-const NotFoundError = require('./utils/not-found-error');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const router = require('./routes/index');
+const { mongoUrl } = require('./utils/config');
+const { limiter } = require('./middlewares/limiter');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 5000 } = process.env;
 const app = express();
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-app.use(helmet());
-app.use(cookies());
-app.use(limiter);
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(requestLogger);
-
-mongoose.connect('mongodb://127.0.0.1:27017/bitfilmsdb', { useNewUrlParser: true })
+mongoose.connect(mongoUrl, { useNewUrlParser: true })
   .then(() => {
     console.log('Успешно установлена связь с MongoDB');
   })
@@ -38,18 +23,17 @@ mongoose.connect('mongodb://127.0.0.1:27017/bitfilmsdb', { useNewUrlParser: true
     console.log(`Произошла ошибка при установлении связи с MongoDB: ${error}`);
   });
 
-app.use('/users', auth, require('./routes/users'));
-app.use('/movies', auth, require('./routes/movies'));
+app.use(helmet());
+app.use(cookies());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post('/signup', signupValidation, createUser);
-app.post('/signin', signinValidation, login);
-app.post('/signout', auth, signout);
+app.use(requestLogger);
+app.use(limiter);
+
+app.use(router);
 
 app.use(errorLogger);
-
-app.use('*', (req, res, next) => {
-  next(new NotFoundError('Страница не найдена'));
-});
 
 app.use(errors());
 
