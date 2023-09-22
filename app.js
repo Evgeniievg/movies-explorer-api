@@ -10,7 +10,7 @@ const errorHandler = require('./middlewares/error-handler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const router = require('./routes/index');
 const { mongoUrl } = require('./utils/config');
-const limiter = require('./middlewares/limiter');
+const { limiter } = require('./middlewares/limiter');
 
 const { PORT = 5000 } = process.env;
 const app = express();
