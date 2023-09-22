@@ -7,8 +7,10 @@ const { errors } = require('celebrate');
 const helmet = require('helmet');
 
 const errorHandler = require('./middlewares/error-handler');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const router = require('./routes/index');
 const { mongoUrl } = require('./utils/config');
+const { limiter } = require('./middlewares/limiter');
 
 const { PORT = 5000 } = process.env;
 const app = express();
@@ -26,7 +28,12 @@ app.use(cookies());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(requestLogger);
+app.use(limiter);
+
 app.use(router);
+
+app.use(errorLogger);
 
 app.use(errors());
 
