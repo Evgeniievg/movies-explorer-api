@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookies = require('cookie-parser');
 const { errors } = require('celebrate');
@@ -22,6 +23,8 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true })
   .catch((error) => {
     console.log(`Произошла ошибка при установлении связи с MongoDB: ${error}`);
   });
+
+app.use(cors());
 
 app.use(helmet());
 app.use(cookies());
