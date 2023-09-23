@@ -107,5 +107,5 @@ module.exports.login = (req, res, next) => {
 };
 
 module.exports.signout = (req, res) => {
-  res.status(200).clearCookie('jwt').json({ message: DELETED_COOKIES });
+  res.status(200).clearCookie().json({ message: DELETED_COOKIES });
 };
