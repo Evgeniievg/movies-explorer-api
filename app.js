@@ -25,7 +25,7 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true })
   });
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://explorer-movies.nomoredomainsrocks.ru'],
+  origin: ['http://localhost:3000', 'https://explorer-movies.nomoredomainsrocks.ru'],
   credentials: true,
 }));
 
